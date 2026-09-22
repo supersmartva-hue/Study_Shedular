@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Productivity</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ── Header ── -->
+  <div class="header">
+    <div class="logo">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="2.5">
+        <path d="M9 11l3 3L22 4"/>
+        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+      </svg>
+    </div>
+    <span class="app-name">Smart Productivity</span>
+    <div id="status-dot" class="dot dot-off"></div>
+  </div>
+
+  <!-- ── Login view ── -->
+  <div id="view-login" class="view hidden">
+    <p class="hint">
+      Paste your access token from the web app to connect the extension.
+    </p>
+    <input id="token-inp" type="password" placeholder="Paste access_token here…" />
+    <button id="btn-connect" class="btn btn-primary">Connect</button>
+    <a id="link-app-login" href="#" target="_blank" class="link-app">
+      Open Web App to get token →
+    </a>
+    <button id="btn-settings" class="btn-settings-link">⚙ Extension Settings</button>
+  </div>
+
+  <!-- ── Main / task form view ── -->
+  <div id="view-main" class="view hidden">
+
+    <!-- Page info card -->
+    <div class="page-card">
+      <span class="site-badge" id="site-badge">detecting…</span>
+      <p class="page-title" id="page-title">Loading…</p>
+      <p class="page-url"   id="page-url"></p>
+    </div>
+
+    <!-- Tab switcher -->
+    <div class="tab-row">
+      <button class="tab-btn active" id="tab-task"  data-tab="task">
+        ✅ To-Do Task
+      </button>
+      <button class="tab-btn"        id="tab-study" data-tab="study">
+        📚 Study Item
+      </button>
+    </div>
+
+    <!-- ── Task form ── -->
+    <div id="form-task">
+      <div class="field">
+        <label class="lbl">Task Title</label>
+        <input id="inp-title" type="text" placeholder="What do you need to do?" />
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label class="lbl">📅 Date</label>
+          <input id="inp-date" type="date" />
+        </div>
+        <div class="field">
+          <label class="lbl">⏰ Reminder</label>
+          <input id="inp-time" type="time" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl">Priority</label>
+        <div class="pri-row">
+          <button class="pri-btn" data-p="1">Low</button>
+          <button class="pri-btn active" data-p="2">Medium</button>
+          <button class="pri-btn" data-p="3">High</button>
+        </div>
+      </div>
+
+      <button id="btn-save" class="btn btn-primary">Save as Task</button>
+    </div>
+
+    <!-- ── Study Item form ── -->
+    <div id="form-study" class="hidden">
+      <div class="field">
+        <label class="lbl">Study Title</label>
+        <input id="inp-study-title" type="text" placeholder="e.g. Machine Learning with Python" />
+      </div>
+
+      <div class="row-2">
+        <div class="field">
+          <label class="lbl">Type</label>
+          <select id="inp-study-type" class="select-inp">
+            <option value="course">Course</option>
+            <option value="book">Book</option>
+            <option value="subject">Subject</option>
+            <option value="language">Language</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="lbl">Est. Hours</label>
+          <input id="inp-study-hours" type="number" min="1" max="9999" value="10" placeholder="10" />
+        </div>
+      </div>
+
+      <div class="field">
+        <label class="lbl">Priority</label>
+        <div class="pri-row" id="study-pri-row">
+          <button class="pri-btn" data-sp="1">Low</button>
+          <button class="pri-btn active" data-sp="2">Medium</button>
+          <button class="pri-btn" data-sp="3">High</button>
+        </div>
+      </div>
+
+      <button id="btn-save-study" class="btn btn-study">Add to Study Scheduler</button>
+    </div>
+
+    <div id="result" class="result hidden"></div>
+
+    <section class="task-list-section">
+      <div class="task-list-heading">
+        <span>Shared To-Do list</span>
+        <button id="btn-refresh-tasks" class="btn-refresh" type="button">Refresh</button>
+      </div>
+      <div id="task-list" class="task-list"><span class="task-empty">Loading tasks…</span></div>
+    </section>
+
+    <div class="footer">
+      <button id="btn-disconnect" class="btn-ghost">Disconnect</button>
+      <a id="link-tasks" href="#" target="_blank" class="link-tasks">Open Tasks →</a>
+    </div>
+  </div>
+
+</div>
+<script src="popup.js"></script>
+</body>
+</html>

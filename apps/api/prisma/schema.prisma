@@ -1,0 +1,218 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(uuid())
+  name        String
+  email       String    @unique
+  password    String
+  language    String    @default("english")
+  timezone    String    @default("UTC")
+  pushSub     Json?     @map("push_sub")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  tasks               Task[]
+  studyItems          StudyItem[]
+  studySessions       StudySession[]
+  notes               Note[]
+  resources           Resource[]
+  aiChats             AiChat[]
+  searchHistory       SearchHistory[]
+  extensionCaptures   ExtensionCapture[]
+  notifications       Notification[]
+  userStats           UserStats?
+
+  @@map("users")
+}
+
+model UserStats {
+  id            String    @id @default(uuid())
+  userId        String    @unique @map("user_id")
+  xp            Int       @default(0)
+  level         Int       @default(1)
+  streak        Int       @default(0)
+  longestStreak Int       @default(0) @map("longest_streak")
+  lastStudyDate DateTime? @map("last_study_date")
+  totalSessions Int       @default(0) @map("total_sessions")
+  totalMinutes  Int       @default(0) @map("total_minutes")
+  achievements  String[]
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_stats")
+}
+
+model Task {
+  id          String    @id @default(uuid())
+  userId      String    @map("user_id")
+  title       String
+  description String?
+  dueDate     DateTime? @map("due_date")
+  reminderAt  DateTime? @map("reminder_at")
+  priority    Int       @default(2)
+  status      String    @default("pending")
+  source      String    @default("manual")
+  sourceMeta  Json?     @map("source_meta")
+  tags        String[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  extensionCaptures   ExtensionCapture[]
+
+  @@index([userId, dueDate])
+  @@map("tasks")
+}
+
+model StudyItem {
+  id             String    @id @default(uuid())
+  userId         String    @map("user_id")
+  type           String
+  title          String
+  description    String?
+  priorityPct    Int       @default(50) @map("priority_pct")
+  color          String    @default("#6366f1")
+  deadline       DateTime?
+  difficulty     Int       @default(3)
+  estimatedHours Float     @default(0) @map("estimated_hours")
+  hoursCompleted Float     @default(0) @map("hours_completed")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notes     Note[]
+  resources Resource[]
+  aiChats   AiChat[]
+  sessions  StudySession[]
+
+  @@index([userId])
+  @@map("study_items")
+}
+
+model StudySession {
+  id           String    @id @default(uuid())
+  userId       String    @map("user_id")
+  studyItemId  String    @map("study_item_id")
+  title        String
+  plannedDate  DateTime  @map("planned_date")
+  startTime    String    @map("start_time")
+  endTime      String    @map("end_time")
+  durationMins Int       @map("duration_mins")
+  status       String    @default("pending")
+  notes        String?
+  xpEarned     Int       @default(0) @map("xp_earned")
+  completedAt  DateTime? @map("completed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studyItem  StudyItem  @relation(fields: [studyItemId], references: [id], onDelete: Cascade)
+
+  @@index([userId, plannedDate])
+  @@map("study_sessions")
+}
+
+model Note {
+  id           String    @id @default(uuid())
+  studyItemId  String    @map("study_item_id")
+  userId       String    @map("user_id")
+  title        String?
+  content      String
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  studyItem  StudyItem  @relation(fields: [studyItemId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([studyItemId])
+  @@map("notes")
+}
+
+model Resource {
+  id           String   @id @default(uuid())
+  studyItemId  String   @map("study_item_id")
+  userId       String   @map("user_id")
+  type         String
+  title        String?
+  url          String
+  fileSize     Int?     @map("file_size")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  studyItem  StudyItem  @relation(fields: [studyItemId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([studyItemId])
+  @@map("resources")
+}
+
+model AiChat {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  studyItemId  String?  @map("study_item_id")
+  messages     Json     @default("[]")
+  title        String?
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studyItem  StudyItem? @relation(fields: [studyItemId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@map("ai_chats")
+}
+
+model SearchHistory {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  query     String
+  category  String   @default("all")
+  results   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("search_history")
+}
+
+model ExtensionCapture {
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  pageUrl     String   @map("page_url")
+  pageTitle   String?  @map("page_title")
+  topic       String?
+  converted   Boolean  @default(false)
+  taskId      String?  @map("task_id")
+  capturedAt  DateTime @default(now()) @map("captured_at")
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  task  Task?  @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@map("extension_captures")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String   @map("user_id")
+  title     String
+  body      String
+  type      String   @default("reminder") // reminder | warning | alarm | achievement | system
+  taskId    String?  @map("task_id")
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([userId, taskId, type])
+  @@map("notifications")
+}

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smart Productivity — Settings</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+      background:#f8fafc;color:#1e293b;min-height:100vh;
+      display:flex;align-items:flex-start;justify-content:center;padding:40px 16px;
+    }
+    .card{
+      width:100%;max-width:480px;
+      background:#fff;border:1.5px solid #e2e8f0;border-radius:16px;
+      overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.07);
+    }
+    .header{
+      background:linear-gradient(135deg,#6366f1,#818cf8);
+      padding:20px 24px;color:#fff;
+    }
+    .header h1{font-size:16px;font-weight:700;margin-bottom:2px}
+    .header p{font-size:12px;opacity:.8}
+    .body{padding:24px}
+    .section{margin-bottom:24px}
+    .section:last-child{margin-bottom:0}
+    h2{font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+    .field{margin-bottom:14px}
+    label{display:block;font-size:12px;font-weight:600;color:#475569;margin-bottom:5px}
+    .hint{font-size:11px;color:#94a3b8;margin-top:3px}
+    input[type="text"]{
+      width:100%;padding:9px 12px;
+      border:1.5px solid #e2e8f0;border-radius:8px;
+      font-size:13px;font-family:inherit;color:#1e293b;background:#f8fafc;
+      outline:none;transition:border-color .15s;
+    }
+    input[type="text"]:focus{border-color:#6366f1;background:#fff}
+    .btn-row{display:flex;gap:8px;margin-top:20px}
+    .btn{
+      padding:9px 20px;border:none;border-radius:8px;
+      font-size:13px;font-weight:700;cursor:pointer;
+      font-family:inherit;transition:background .15s;
+    }
+    .btn-primary{background:#6366f1;color:#fff}
+    .btn-primary:hover{background:#4f46e5}
+    .btn-ghost{background:#f1f5f9;color:#64748b}
+    .btn-ghost:hover{background:#e2e8f0}
+    .msg{
+      margin-top:12px;padding:8px 12px;border-radius:8px;
+      font-size:12px;display:none;
+    }
+    .msg.ok{background:#dcfce7;color:#166534;display:block}
+    .msg.err{background:#fee2e2;color:#991b1b;display:block}
+    .divider{height:1px;background:#f1f5f9;margin:20px 0}
+    .token-section{background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:14px}
+    .token-section p{font-size:12px;color:#92400e;line-height:1.6}
+    .token-section ol{margin-top:8px;padding-left:16px}
+    .token-section li{font-size:12px;color:#92400e;margin-bottom:4px}
+    code{
+      background:#fff3cd;border:1px solid #fbbf24;
+      border-radius:4px;padding:1px 5px;font-size:11px;font-family:monospace;
+    }
+  </style>
+</head>
+<body>
+<div class="card">
+  <div class="header">
+    <h1>⚙️ Extension Settings</h1>
+    <p>Configure your Smart Productivity extension</p>
+  </div>
+  <div class="body">
+
+    <div class="section">
+      <h2>Server Configuration</h2>
+      <div class="field">
+        <label for="inp-api">API Server URL</label>
+        <input id="inp-api" type="text" placeholder="http://localhost:4000" />
+        <p class="hint">The backend API address (no trailing slash).</p>
+      </div>
+      <div class="field">
+        <label for="inp-app">Web App URL</label>
+        <input id="inp-app" type="text" placeholder="http://localhost:3000" />
+        <p class="hint">The frontend URL — used for "Open App" links.</p>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="btn-save">Save Settings</button>
+        <button class="btn btn-ghost"   id="btn-reset">Reset to Defaults</button>
+      </div>
+      <div class="msg" id="msg"></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section">
+      <h2>How to Connect Your Account</h2>
+      <div class="token-section">
+        <p><strong>To get your access token:</strong></p>
+        <ol>
+          <li>Open the web app and log in.</li>
+          <li>Go to <strong>Settings → Account</strong>.</li>
+          <li>Click <strong>"Copy Access Token"</strong>.</li>
+          <li>Click the extension icon and paste the token in the login view.</li>
+        </ol>
+        <p style="margin-top:8px">Tokens expire after 15 minutes. If the extension shows "Not signed in", get a fresh token from Settings.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+<script src="options.js"></script>
+</body>
+</html>

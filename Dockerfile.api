@@ -1,0 +1,30 @@
+# Backend Dockerfile
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Copy workspace manifests — npm ci validates the lockfile against every
+# workspace's package.json, so both apps/api and apps/web must be present
+COPY package*.json ./
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+
+COPY apps/api/prisma ./apps/api/prisma
+RUN npm ci
+
+# Generate explicitly — in a hoisted npm-workspaces install, @prisma/client's
+# postinstall hook does not reliably run against the workspace's schema
+RUN npm run db:generate --workspace=apps/api
+
+# Copy remaining API source
+COPY apps/api/src ./apps/api/src
+COPY apps/api/tsconfig.json ./apps/api/
+
+# Build only the API workspace
+RUN npm run build --workspace=apps/api
+
+# Expose port
+EXPOSE 4000
+
+# Apply committed migrations and start
+CMD ["sh", "-c", "cd apps/api && npx prisma migrate deploy && node dist/index.js"]

@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Environment files (never commit secrets)
+.env
+.env.*
+!.env.example
+
+# Build output
+dist/
+build/
+.next/
+out/
+
+# Logs
+*.log
+npm-debug.log*
+
+# TypeScript incremental build info
+*.tsbuildinfo
+
+# Test coverage
+coverage/
+
+# Cache directories
+.cache/
+.turbo/
+.eslintcache
+.parcel-cache/
+
+# Vercel local project link/output
+.vercel/
+
+# OS / editor cruft
+.DS_Store
+Thumbs.db
+
+# Claude Code local (machine-specific) settings — not meant to be shared
+.claude/settings.local.json

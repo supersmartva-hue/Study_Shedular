@@ -1,0 +1,35 @@
+# Frontend Dockerfile
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+# Copy workspace manifests — npm ci validates the lockfile against every
+# workspace's package.json, so both apps/api and apps/web must be present
+COPY package*.json ./
+COPY apps/api/package.json ./apps/api/
+COPY apps/web/package.json ./apps/web/
+RUN npm ci
+
+COPY apps/web ./apps/web
+
+# Build Next.js
+ARG NEXT_PUBLIC_API_URL=http://localhost:4000
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+RUN npm run build --workspace=apps/web
+
+# Production image
+FROM node:22-alpine
+
+WORKDIR /app
+
+COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/apps/web/package.json ./apps/web/
+COPY --from=builder /app/apps/api/package.json ./apps/api/
+RUN npm ci --omit=dev
+
+COPY --from=builder /app/apps/web/.next ./apps/web/.next
+COPY --from=builder /app/apps/web/public ./apps/web/public
+
+EXPOSE 3000
+
+CMD ["npm", "start", "--workspace=apps/web"]

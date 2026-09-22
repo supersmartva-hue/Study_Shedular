@@ -1,0 +1,33 @@
+.vercel
+node_modules/
+.env
+dist/
+build/
+.next/
+coverage/
+# Dependencies
+node_modules/
+
+# Environment files
+.env
+.env.*
+**/.env
+**/.env.*
+!.env.example
+
+# Build folders
+dist/
+**/dist/
+build/
+.next/
+out/
+
+# Logs
+*.log
+
+# TypeScript
+*.tsbuildinfo
+
+# Cache
+.cache/
+coverage/
